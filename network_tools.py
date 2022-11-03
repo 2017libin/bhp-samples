@@ -1,4 +1,9 @@
 import socket
+import threading
+
+def tcp_server():
+    IP = '0.0.0.0'
+    PORT = 9998
 
 def sample_tcp_client():
     dest_host = "www.baidu.com"
@@ -17,6 +22,22 @@ def sample_tcp_client():
     response = client.recv(4096)
 
     print(response.decode())
+    client.close()
+
+def sample_udp_client():
+    dest_host = "127.0.0.1"
+    dest_port = 9997
+
+    # 创建一个socket对象
+    client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+    # 发送数据，不需要建立连接
+    client.sendto(b"HELLO", (dest_host, dest_port))
+
+    # 接收数据
+    data, addr = client.recvfrom(4096)
+
+    print(data.decode())
     client.close()
 
 if __name__ == "__main__":
