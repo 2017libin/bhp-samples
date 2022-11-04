@@ -21,10 +21,10 @@ class NetCat:
             self.send()
 
     # netcat作为接收方（客户端）
-    def listen(self):
+    def send(self):
         self.socket.connect((self.args.target, self.args.port))  # 建立连接
-        if self.buffer:
-            self.socket.send(self.buffer)  # 发送数据
+        # if self.buffer:
+        #     self.socket.send(self.buffer)  # 发送数据
         try:
             while True:
                 response = ''
@@ -35,8 +35,8 @@ class NetCat:
                     if recv_len < 4096:
                         break
                 if response:  # 如果获得响应
-                    print(response)
-                    buffer = input('> ')
+                    print(response, end='')
+                    buffer = input()
                     buffer += '\n'
                     self.socket.send(buffer.encode())  # 发送数据
         except KeyboardInterrupt:
@@ -45,7 +45,7 @@ class NetCat:
             sys.exit()
 
     # netcat作为发送方（服务端）
-    def send(self):
+    def listen(self):
         self.socket.bind((self.args.target, self.args.port))  # 监听端口
         self.socket.listen(5)  # 最大连接数
         while True:
@@ -57,6 +57,7 @@ class NetCat:
     def handle(self, client_socket):
         if self.args.execute:
             output = execute(self.args.execute)
+            client_socket.send(output.encode())
         elif self.args.upload:
             file_buffer = b''
             while True:
@@ -73,13 +74,14 @@ class NetCat:
             cmd_buffer = b''
             while True:
                 try:
-                    client_socket.send(b'BHP2: #>')  # 发送命令行提示符
+                    client_socket.send(b'\nBHP2: #> ')  # 发送命令行提示符
                     while '\n' not in cmd_buffer.decode():  # 接收命令
                         tmp = client_socket.recv(64)
                         print(f"tmp: {tmp}")
                         cmd_buffer += tmp
                     response = execute(cmd_buffer.decode())  # 执行命令
                     if response:
+                        print(response)
                         client_socket.send(response.encode())  # 命令的输出不为空，发送命令的输出结果
                     cmd_buffer = b''  # 清空cmd_buffer，准备接收下一次命令
                 except Exception as e:
@@ -109,12 +111,11 @@ if __name__ == '__main__':
     parser.add_argument('-u', '--upload', help='upload file')
 
     args = parser.parse_args()
-    print(args.listen)
-
-    if args.listen:
-        buffer = ''
-    else:
-        buffer = sys.stdin.read()
+    buffer = ''
+    # if args.listen:
+    #     buffer = ''
+    # else:
+    #     buffer = sys.stdin.read()
 
     nc = NetCat(args, buffer.encode())
     nc.run()
