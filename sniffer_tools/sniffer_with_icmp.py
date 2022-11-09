@@ -32,6 +32,16 @@ class IP:
             print(f'No protocol with number {self.protocol_num}')
             sys.exit(1)
 
+class ICMP:
+    def __init__(self, buff):
+        header = struct.unpack('<BBHHH', buff)
+        self.type = header[0]
+        self.code = header[1]
+        self.sum = header[2]
+        self.id = header[3]
+        self.seq = header[4]
+
+
 def sniff(host):
     name = os.name
     if name == 'nt':
@@ -51,8 +61,17 @@ def sniff(host):
             raw_buff = sniffer.recvfrom(65535)[0]
             ip_header = IP(raw_buff[0:20])
 
+            if ip_header.protocol == 'ICMP':
+                print(f'{ip_header.protocol} {ip_header.src_ip}->{ip_header.dst_ip}')
+                print(f'Vesion: {ip_header.ver}')
+                print(f'Header length: {ip_header.ihl} TLL: {ip_header.ttl}')
+
+                offset = ip_header.ihl*4
+                buf = raw_buff[offset:offset+8]
+                icmp_header = ICMP(buf)
+                print(f'ICMP -> type: {icmp_header.type} Code: {icmp_header.code}')
             # print(f'{ip_header.protocol}: {ip_header.src_ip}->{ip_header.dst_ip}')
-            print(ip_header.protocol, ip_header.src_ip, ip_header.dst_ip)
+            # print(ip_header.protocol, ip_header.src_ip, ip_header.dst_ip)
     except KeyboardInterrupt:
         if name == 'nt':
             sniffer.ioctl(socket.SIO_RCVALL, socket.RCVALL_OFF)
@@ -62,5 +81,5 @@ if __name__ == '__main__':
     if len(sys.argv) == 2:
         host = sys.argv[1]
     else:
-        host = '10.255.124.73'
+        host = '10.242.182.10'
     sniff(host)
