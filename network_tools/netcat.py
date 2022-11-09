@@ -1,4 +1,3 @@
-from network_tools import execute
 import argparse
 import socket
 import textwrap
@@ -6,6 +5,13 @@ import sys
 import threading
 import subprocess
 import shlex
+
+def execute(cmd: str):
+    cmd = cmd.strip()  # 去掉首尾的空白字符
+    if not cmd:
+        return
+    output = subprocess.check_output(shlex.split(cmd), stderr=subprocess.STDOUT)
+    return output.decode()
 
 class NetCat:
     def __init__(self, args, buffer=None):
