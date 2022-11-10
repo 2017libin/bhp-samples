@@ -73,10 +73,6 @@ class Scanner:
                 ip_header = IP(raw_buff[0:20])
 
                 if ip_header.protocol == 'ICMP':
-
-                    # print(f'Vesion: {ip_header.ver}')
-                    # print(f'Header length: {ip_header.ihl} TLL: {ip_header.ttl}')
-
                     offset = ip_header.ihl * 4
                     buf = raw_buff[offset:offset + 8]
                     icmp_header = ICMP(buf)
@@ -88,8 +84,6 @@ class Scanner:
                                 if tgt != self.host and tgt not in hosts_up:
                                     hosts_up.add(tgt)
                                     print(f'Host up: {tgt}')
-                # print(f'{ip_header.protocol}: {ip_header.src_ip}->{ip_header.dst_ip}')
-                # print(ip_header.protocol, ip_header.src_ip, ip_header.dst_ip)
         except KeyboardInterrupt:
             if os.name == 'nt':
                 self.socket.ioctl(socket.SIO_RCVALL, socket.RCVALL_OFF)
