@@ -58,6 +58,7 @@ def sniff(host):
             sniffer.ioctl(socket.SIO_RCVALL, socket.RCVALL_OFF)
         sys.exit()
 
+# 新增一个测试
 if __name__ == '__main__':
     if len(sys.argv) == 2:
         host = sys.argv[1]
