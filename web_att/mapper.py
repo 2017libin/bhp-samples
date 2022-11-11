@@ -44,6 +44,7 @@ def test_remote():
         else:
             print('-')
 
+# 创建多线程对网站的文件进行扫描
 def run():
     mythreads = list()
     for i in range(THREADS):
@@ -63,7 +64,7 @@ if __name__ == '__main__':
     answers = queue.Queue()
     web_paths = queue.Queue()
 
-    with chdir('/mnt/d/WordPress-master'):
+    with chdir('/mnt/d/WordPress-master'):  # 这里填写WordPress的路径
         print(os.getcwd())
         gather_paths()
     # with结束回到原来的路径
