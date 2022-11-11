@@ -1,0 +1,3 @@
+[submodule "github_cc/bhptrojan"]
+	path = github_cc/bhptrojan
+	url = https://github.com/2017libin/bhptrojan.git
